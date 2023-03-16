@@ -1,2 +1,2 @@
 #!/bin/bash
- echo gcc -E $CFILE -o c
+ echo export $CFILE=0-main;gcc -E $CFILE -o c
