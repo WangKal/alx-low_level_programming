@@ -1,2 +1,2 @@
 #!/bin/bash
-  export CFILE="4-main.c";gcc -S -masm=intel $CFILE
+  export CFILE="100-main.c";gcc -S -masm=intel $CFILE
