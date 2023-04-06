@@ -1,58 +1,77 @@
-#include "main.h"
-
+#include "holberton.h"
 /**
- * wildcmp - compare two strings with "wildcard expansion" capabilities
- * @s1: string 1
- * @s2: string 2
- * Return: 1 if strings can be considered identical, else 0
- */
-
-int wildcmp(char *s1, char *s2)
+  * _strlen_recursion - lenght
+  * @s: char
+  * Return: lenght
+**/
+int _strlen_recursion(char *s)
 {
-	if (*s1 == '\0' && *s2 == '\0')
-		return (1);
-	else if (*s1 == '\0' || *s2 == '\0')
+	if (*s == '\0')
 	{
-		if (*s1 == '\0' && *s2 == '*')
-			return wildcmp(s1, ++s2);
-		else if (*s1 == '*' && *s2 == '\0')
-			return wildcmp(++s1, s2);
 		return (0);
 	}
+	s++;
+	return (_strlen_recursion(s) + 1);
+}
+/**
+* comp - compares
+* @s1: char
+* @s2: char
+* @i: iterator for s1
+* @j: iterator for s2
+* @wc: wildcard on
+* @lastwc: last wildcard
+* @len: length s1
+* Return: boolean
+**/
 
-	if (*s1 == *s2)
+int comp(char *s1, char *s2, int i, int j, int wc, int lastwc, int len)
+{
+	if (s2[j] == '\0' && (s2[j - 1] == '*' || s2[j - 1] == s1[len - 1]))
+	return (1);
+	if (s2[j] == '*')
 	{
-		return wildcmp(++s1, ++s2);
+		lastwc = ++j;
+		wc = 1;
+		return (comp(s1, s2, i, j, wc, lastwc, len));
 	}
-	else if (*s1 == '*')
+	if (s2[j] == s1[i])
 	{
-		if (*(s1 + 1) == '*')
-			return wildcmp(++s1, s2);
-		else
-		{
-			return wildcmp(s1, findsrc(s2, *(s1 + 1), 0, 0) + s2);
-		}
+		i++;
+		j++;
+		wc = 0;
+		return (comp(s1, s2, i, j, wc, lastwc, len));
 	}
-	else if (*s2 == '*')
+	if (s1[i] != s2[j] && wc == 1)
 	{
-		if (*(s2 + 1) == '*')
-			return wildcmp(s1, ++s2);
-		else
-		{
-			return wildcmp(s1 + findsrc(s1, *(s2 + 1), 0, 0), s2);
-		}
+		if (s1[i] == '\0')
+		return (0);
+		i++;
+		return (comp(s1, s2, i, j, wc, lastwc, len));
 	}
-
-	return (0);
-
+	if (s1[i] == '\0')
+		return (0);
+	if (s1[i] != s2[j] && wc == 0)
+	{
+		j = lastwc;
+		wc = 1;
+		if (lastwc == 0)
+		return (0);
+		return (comp(s1, s2, i, j, wc, lastwc, len));
+	}
+return (0);
 }
 
-int findsrc(char *s, char c, int i, int p)
+/**
+* wildcmp - 1 if the strings can be considered identical
+* @s1: char 1
+* @s2: char 2
+* Return: Boolean
+*/
+int wildcmp(char *s1, char *s2)
 {
-	if (*(s + i) == '\0')
-		return (p + 1);
-	else if (*(s + i) == c || *(s + i) == '*')
-		p = i;
+int i = 0, j = 0, wc = 1, lastwc = 0, len;
+len = _strlen_recursion(s1);
 
-	return (findsrc(s, c, i + 1, p));
+return (comp(s1, s2, i, j, wc, lastwc, len));
 }
