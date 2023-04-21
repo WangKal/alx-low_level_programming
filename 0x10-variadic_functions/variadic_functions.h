@@ -1,25 +1,18 @@
-#ifndef _VARIADIC_FUNCTIONS_H
-#define _VARIADIC_FUNCTIONS_H
+#ifndef VARIADIC_FUNCTIONS_H
+#define VARIADIC_FUNCTIONS_H
 #include <stdarg.h>
-#include <stdio.h>
-/**
-* struct fmt - Struct format
-*
-* @f: type format
-* @p: print function
-*/
-typedef struct fmt
-{
-	char *f;
-	void (*p)(va_list s);
-} my_fmt;
 int sum_them_all(const unsigned int n, ...);
 void print_numbers(const char *separator, const unsigned int n, ...);
 void print_strings(const char *separator, const unsigned int n, ...);
 void print_all(const char * const format, ...);
-int _strlen_recursion(char *s);
-void print_c(va_list s);
-void print_i(va_list s);
-void print_f(va_list s);
-void print_s(va_list s);
+void _printchar(va_list list);
+void _printstr(va_list list);
+void _printfloat(va_list list);
+void _printint(va_list list);
+
+typedef struct checker
+{
+	char *type;
+	void (*f)();
+} checker;
 #endif
