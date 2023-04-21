@@ -1,90 +1,79 @@
-#include <stdio.h>
-#include <stdarg.h>
 #include "variadic_functions.h"
-/**
-* print_c - print char
-*
-* @s: va_list
-*/
-void print_c(va_list s)
-{
-	printf("%c", va_arg(s, int));
-}
-/**
-* print_i - print integer
-*
-* @s: va_list
-*/
-void print_i(va_list s)
-{
-	printf("%i", va_arg(s, int));
-}
-/**
-* print_f - print float
-*
-* @s: va_list
-*/
-void print_f(va_list s)
-{
-	printf("%f", va_arg(s, double));
-}
-/**
-* print_s - print string
-*
-* @s: va_list
-*/
-void print_s(va_list s)
-{
-	va_list clone;
+#include <stdlib.h>
+#include <stdio.h>
 
-	va_copy(clone, s);
-	if (va_arg(clone, char*) == '\0')
-	{
-	printf("%p", va_arg(s, char*));
-	}
-	else
-	{
-	printf("%s", va_arg(s, char*));
-	}
-}
 /**
-* print_all - print char, integer, float and string
-*
-* @format: format
-*/
+ * _printchar - print char type element from va_list
+ * @list: va_list passed to function
+ */
+void _printchar(va_list list)
+{
+	printf("%c", va_arg(list, int));
+}
+
+/**
+ * _printstr - print string element from va_list
+ * @list: va_list passed to function
+ */
+void _printstr(va_list list)
+{
+	char *s;
+
+	s = va_arg(list, char *);
+	if (s == NULL)
+		s = "(nil)";
+	printf("%s", s);
+}
+
+/**
+ * _printfloat - print float type element from va_list
+ * @list: va_list passed to function
+ */
+void _printfloat(va_list list)
+{
+	printf("%f", va_arg(list, double));
+}
+
+/**
+ * _printint - print int type element from va_list
+ * @list: va_list passed to function
+ */
+void _printint(va_list list)
+{
+	printf("%d", va_arg(list, int));
+}
+
+/**
+ * print_all - print anything passed if char, int, float, or string.
+ * @format: string of formats to use and print
+ */
 void print_all(const char * const format, ...)
 {
+	unsigned int i, j;
+	va_list args;
+	char *sep;
 
-	va_list list1;
-	unsigned int i = 0, j = 0;
-	my_fmt fmts[] = {
-		{"c", print_c},
-		{"i", print_i},
-		{"f", print_f},
-		{"s", print_s},
-		{'\0', '\0'}
+	checker storage[] = {
+		{ "c", _printchar },
+		{ "f", _printfloat },
+		{ "s", _printstr },
+		{ "i", _printint }
 	};
 
-	va_start(list1, format);
-	while (format[j] != '\0')
+	i = 0;
+	sep = "";
+	va_start(args, format);
+	while (format != NULL && format[i / 4] != '\0')
 	{
-		i = 0;
-		while (fmts[i].f != '\0')
+		j = i % 4;
+		if (storage[j].type[0] == format[i / 4])
 		{
-			if (*(fmts[i].f) == format[j])
-			{
-				fmts[i].p(list1);
-				if (format[j + 1] == '\0')
-				{
-					printf("\n");
-				}
-				else
-				{
-					printf(", ");
-				}
-			}
-			i++;
+			printf("%s", sep);
+			storage[j].f(args);
+			sep = ", ";
 		}
-		j++;
+		i++;
 	}
+	printf("\n");
+	va_end(args);
 }
